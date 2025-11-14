@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<head>
+    <title>Update Inventory Item</title>
+    <style>
+        .form-container {
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #4CAF50;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .btn-submit {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-submit:hover {
+            background-color: #45a049;
+        }
+        .btn-cancel {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-cancel:hover {
+            background-color: #da190b;
+        }
+        .required {
+            color: red;
+        }
+    </style>
+</head>
+
+<div class="form-container">
+    <h1>Update Inventory Item</h1>
+    <p class="subtitle">Update product and inventory details</p>
+    
+    <form method="POST">
+        <!-- Product info Section -->
+        <div class="section-title">Product Information</div>
+        
+        <div class="form-group">
+            <label for="productName">Product Name <span class="required">*</span></label>
+            <input type="text" 
+                   name="productName" 
+                   id="productName" 
+                   value="{{ product.productName }}"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="category">Category <span class="required">*</span></label>
+            <input type="text" 
+                   name="category" 
+                   id="category" 
+                   value="{{ product.category }}"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="price">Price <span class="required">*</span></label>
+            <input type="number" 
+                   name="price" 
+                   id="price" 
+                   value="{{ product.price }}"
+                   step="0.01"
+                   min="0"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="productUnitMeasure">Product Unit Measure <span class="required">*</span></label>
+            <input type="number" 
+                   name="productUnitMeasure" 
+                   id="productUnitMeasure" 
+                   value="{{ product.unitMeasure }}"
+                   step="0.01"
+                   min="0"
+                   required>
+        </div>
+
+        <!-- Inventory info Section -->
+        <div class="section-title">Inventory Information</div>
+
+        <div class="form-group">
+            <label for="inventoryUnitMeasure">Inventory Unit Measure <span class="required">*</span></label>
+            <input type="number" 
+                   name="inventoryUnitMeasure" 
+                   id="inventoryUnitMeasure" 
+                   value="{{ inventory.unitMeasure }}"
+                   step="0.01"
+                   min="0"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="inventoryCost">Inventory Cost <span class="required">*</span></label>
+            <input type="number" 
+                   name="inventoryCost" 
+                   id="inventoryCost" 
+                   value="{{ inventory.inventoryCost }}"
+                   step="0.01"
+                   min="0"
+                   required>
+        </div>
+
+        <div class="btn-container">
+            <button type="submit" class="btn-submit">Update Item</button>
+            <button type="button" class="btn-cancel" onclick="window.location.href='/'">Cancel</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

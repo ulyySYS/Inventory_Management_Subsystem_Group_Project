@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<head>
+    <title>Update Quantity</title>
+    <style>
+        .form-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .product-info {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .btn-submit {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-submit:hover {
+            background-color: #45a049;
+        }
+        .btn-cancel {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-cancel:hover {
+            background-color: #da190b;
+        }
+    </style>
+</head>
+
+<div class="form-container">
+    <h1>Update Quantity</h1>
+    <p class="product-info">{{ product.productName }}</p>
+    
+    <form method="POST">
+        <div class="form-group">
+            <label for="quantityOnHand">Current Quantity: {{ inventory.quantityOnHand }}</label>
+            <input type="number" 
+                   name="quantityOnHand" 
+                   id="quantityOnHand" 
+                   placeholder="Enter new quantity" 
+                   step="0.01"
+                   min="0"
+                   value="{{ inventory.quantityOnHand }}"
+                   required>
+        </div>
+
+        <div class="btn-container">
+            <button type="submit" class="btn-submit">Update Quantity</button>
+            <button type="button" class="btn-cancel" onclick="window.location.href='/'">Cancel</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

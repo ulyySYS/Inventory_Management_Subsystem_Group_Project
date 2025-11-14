@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory View</title>
+    <!-- <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/test.css') }}">  -->
+    <style>
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .inventory-table th,
+        .inventory-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .inventory-table th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+        }
+        .inventory-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .inventory-table tr:hover {
+            background-color: #ddd;
+        }
+        .low-stock {
+            color: red;
+            font-weight: bold;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .btn {
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        .btn-stock {
+            background-color: #ff9800;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    {% extends 'base.html' %}
+    {% block content %}
+    
+    {% if user %}
+        <h1 class="greeting user">Hello {{user}}!</h1>
+    {% else %}
+        <h1 class="greeting">Inventory Management System</h1>
+    {% endif %}
+
+    <h2>Current Stock Levels</h2>
+    
+    {% if inventory_items %}
+    <table class="inventory-table">
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Quantity on Hand</th>
+                <th>Unit Measure</th>
+                <th>Price</th>
+                <th>Inventory Cost</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inventory, product in inventory_items %}
+            <tr>
+                <td>{{ inventory.SKU }}</td>
+                <td>{{ product.productName }}</td>
+                <td>{{ product.category }}</td>
+                <td {% if inventory.isLowStock %}class="low-stock"{% endif %}>
+                    <a href="{{ url_for('update_quantity', sku=inventory.SKU) }}" style="color: inherit; text-decoration: underline; cursor: pointer;">
+                        {{ inventory.quantityOnHand }}
+                    </a>
+                </td>
+                <td>{{ inventory.unitMeasure }}</td>
+                <td>${{ "%.2f"|format(product.price) }}</td>
+                <td>${{ "%.2f"|format(inventory.inventoryCost) }}</td>
+                <td>
+                    {% if inventory.isLowStock %}
+                        <span class="low-stock">Low Stock</span>
+                    {% else %}
+                        <span>In Stock</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <a href="{{ url_for('update_inventory_item', sku=inventory.SKU) }}" class="btn btn-stock">Update</a>
+                    </div>
+                </td>
+    
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No inventory items found. <a href="{{ url_for('add_inventory') }}">Add your first item</a></p>
+    {% endif %}
+
+    <div style="margin-top: 20px;">
+        <a href="{{ url_for('add_inventory') }}" class="btn btn-stock" style="display: inline-block; padding: 10px 20px;">Add New Inventory Item</a>
+    </div>
+
+    {% endblock %}
+</body>
+</html>
