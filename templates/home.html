@@ -6,6 +6,26 @@
     <title>Inventory View</title>
     <!-- <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/test.css') }}">  -->
     <style>
+        .low-stock-alert {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .low-stock-alert h3 {
+            color: #ff5722;
+            margin-top: 0;
+        }
+        .low-stock-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .low-stock-list li {
+            padding: 5px 0;
+            color: #d32f2f;
+            font-weight: bold;
+        }
         .inventory-table {
             width: 100%;
             border-collapse: collapse;
@@ -58,6 +78,19 @@
         <h1 class="greeting">Inventory Management System</h1>
     {% endif %}
 
+    {% if low_stock_count > 0 %}
+    <div class="low-stock-alert">
+        <h3>⚠️ Low Stock Alert</h3>
+        <p>You have <strong>{{ low_stock_count }}</strong> item(s) running low on stock:</p>
+        <ul class="low-stock-list">
+            {% for inventory in low_stock_items %}
+            {% set product = inventory.product %}
+            <li>{{ product.productName }} - Only {{ inventory.quantityOnHand }} units remaining (SKU: {{ inventory.SKU }})</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
     <h2>Current Stock Levels</h2>
     
     {% if inventory_items %}
@@ -87,8 +120,8 @@
                     </a>
                 </td>
                 <td>{{ inventory.unitMeasure }}</td>
-                <td>${{ "%.2f"|format(product.price) }}</td>
-                <td>${{ "%.2f"|format(inventory.inventoryCost) }}</td>
+                <td>₱{{ "%.2f"|format(product.price) }}</td>
+                <td>₱{{ "%.2f"|format(inventory.inventoryCost) }}</td>
                 <td>
                     {% if inventory.isLowStock %}
                         <span class="low-stock">Low Stock</span>
@@ -109,10 +142,6 @@
     {% else %}
     <p>No inventory items found. <a href="{{ url_for('add_inventory') }}">Add your first item</a></p>
     {% endif %}
-
-    <div style="margin-top: 20px;">
-        <a href="{{ url_for('add_inventory') }}" class="btn btn-stock" style="display: inline-block; padding: 10px 20px;">Add New Inventory Item</a>
-    </div>
 
     {% endblock %}
 </body>

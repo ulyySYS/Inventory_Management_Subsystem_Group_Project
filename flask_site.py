@@ -1,12 +1,19 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from markupsafe import escape
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///inventory.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'your-secret-key-here'
 
 db = SQLAlchemy(app)
+
+# Make datetime available in templates
+@app.context_processor
+def inject_now():
+    return {'now': datetime.now()}
 
 class Product(db.Model):
     __tablename__ = 'product'
@@ -16,6 +23,14 @@ class Product(db.Model):
     category = db.Column(db.String(255), nullable=False)
     price = db.Column(db.Float, nullable=False)
     unitMeasure = db.Column(db.Float, nullable=False)
+
+    def getProductInfo(self):
+        """Get product information as a string"""
+        return f"{self.productName} ({self.category}) - ${self.price}"
+    
+    def updatePrice(self, newPrice):
+        """Update product price"""
+        self.price = newPrice
 
 
 class Inventory(db.Model):
@@ -30,10 +45,58 @@ class Inventory(db.Model):
 
     product = db.relationship('Product', backref='inventory_items')
 
+    def updateStock(self, quantity_int):
+        """Update stock quantity"""
+        self.quantityOnHand = quantity_int
+
+
+class OrderItem(db.Model):
+    __tablename__ = 'orderitem'
+
+    orderItemID = db.Column(db.Integer, primary_key=True)
+    orderID = db.Column(db.Integer, nullable=False)
+    productID = db.Column(db.Integer, db.ForeignKey('product.productID'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    subtotal = db.Column(db.Float, nullable=False)
+
+    product = db.relationship('Product', backref='order_items')
+
+    def calculateSubtotal(self):
+        """Calculate subtotal based on quantity and product price"""
+        if self.product:
+            self.subtotal = self.quantity * self.product.price
+            return self.subtotal
+        return 0.0
+    
+    def updatePrice(self, newPrice):
+        """Update price and recalculate subtotal"""
+        if self.product:
+            self.product.price = newPrice
+            self.calculateSubtotal()
+
 
 with app.app_context():
     db.create_all()
 
+
+# LOW STOCK THRESHOLD
+LOW_STOCK_THRESHOLD = 10
+
+
+def check_low_stock():
+    """Check all inventory items and update isLowStock status"""
+    inventory_items = Inventory.query.all()
+    for item in inventory_items:
+        if item.quantityOnHand <= LOW_STOCK_THRESHOLD:
+            item.isLowStock = True
+        else:
+            item.isLowStock = False
+    db.session.commit()
+
+
+def get_low_stock_items():
+    """Get all items that are low in stock"""
+    return Inventory.query.filter(Inventory.isLowStock == True).all()
 
 
 
@@ -97,6 +160,13 @@ def update_quantity(sku):
     if request.method == 'POST':
         new_quantity = float(request.form.get('quantityOnHand'))
         inventory_item.quantityOnHand = new_quantity
+        
+        # Check if it's low stock
+        if new_quantity <= LOW_STOCK_THRESHOLD:
+            inventory_item.isLowStock = True
+        else:
+            inventory_item.isLowStock = False
+            
         db.session.commit()
         
         flash(f'Quantity updated successfully for "{product.productName}"!', 'success')
@@ -130,14 +200,64 @@ def update_inventory_item(sku):
     
     return render_template('update_inventory.html', inventory=inventory_item, product=product)
 
+
+# CODE FOR GENERATING INVENTORY REPORT
+@app.route('/inventory/report')
+def inventory_report():
+    """Generate comprehensive inventory report"""
+    check_low_stock()  # Update low stock status first
+    
+    inventory_items = db.session.query(Inventory, Product).join(
+        Product, Inventory.productID == Product.productID
+    ).all()
+    
+    # Calculate report statistics
+    total_items = len(inventory_items)
+    total_inventory_value = sum(inv.quantityOnHand * inv.inventoryCost for inv, prod in inventory_items)
+    low_stock_items = [item for item in inventory_items if item[0].isLowStock]
+    low_stock_count = len(low_stock_items)
+    
+    # Category breakdown
+    categories = {}
+    for inv, prod in inventory_items:
+        if prod.category not in categories:
+            categories[prod.category] = {
+                'count': 0,
+                'total_value': 0,
+                'total_quantity': 0
+            }
+        categories[prod.category]['count'] += 1
+        categories[prod.category]['total_value'] += inv.quantityOnHand * inv.inventoryCost
+        categories[prod.category]['total_quantity'] += inv.quantityOnHand
+    
+    return render_template('inventory_report.html', 
+                         inventory_items=inventory_items,
+                         total_items=total_items,
+                         total_inventory_value=total_inventory_value,
+                         low_stock_items=low_stock_items,
+                         low_stock_count=low_stock_count,
+                         categories=categories)
+
+
 # THIS IS ALSO THE VIEW INVENTORY, SINCE THE INVENTORY ITEMS ARE DISPLAYED ON START OF THE PAGE
 # HOME PAGE
 @app.route('/') 
 @app.route('/home') 
 def index(user_name=None):
     """Home page showing inventory table"""
+    check_low_stock()  # Check and update low stock status
+    
     inventory_items = db.session.query(Inventory, Product).join(
         Product, Inventory.productID == Product.productID
     ).all()
-    return render_template('home.html', user=user_name, inventory_items=inventory_items)
+    
+    # Get low stock items for notification
+    low_stock_items = get_low_stock_items()
+    low_stock_count = len(low_stock_items)
+    
+    return render_template('home.html', user=user_name, inventory_items=inventory_items, 
+                         low_stock_count=low_stock_count, low_stock_items=low_stock_items)
 
+
+if __name__ == '__main__':
+    app.run(debug=True)
