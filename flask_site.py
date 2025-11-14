@@ -201,6 +201,38 @@ def update_inventory_item(sku):
     return render_template('update_inventory.html', inventory=inventory_item, product=product)
 
 
+# CODE FOR DELETING INVENTORY ITEM (NEW!)
+@app.route('/inventory/delete/<int:sku>', methods=['POST'])
+def delete_inventory(sku):
+    """Delete an inventory item and its associated product"""
+    try:
+        inventory_item = Inventory.query.get_or_404(sku)
+        product = Product.query.get(inventory_item.productID)
+        product_name = product.productName
+        
+        # Delete inventory first (foreign key constraint)
+        db.session.delete(inventory_item)
+        
+        # Check if this product has other inventory entries
+        other_inventory = Inventory.query.filter(
+            Inventory.productID == product.productID,
+            Inventory.SKU != sku
+        ).first()
+        
+        # If no other inventory entries, delete the product too
+        if not other_inventory:
+            db.session.delete(product)
+        
+        db.session.commit()
+        
+        flash(f'"{product_name}" has been deleted successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting item: {str(e)}', 'error')
+    
+    return redirect(url_for('index'))
+
+
 # CODE FOR GENERATING INVENTORY REPORT
 @app.route('/inventory/report')
 def inventory_report():
