@@ -1,179 +1,88 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<head>
-    <title>Add Inventory Item</title>
-    <style>
-        .form-container {
-            max-width: 700px;
-            margin: 20px auto;
-            padding: 30px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-        }
-        .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #4CAF50;
-            margin: 25px 0 15px 0;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #4CAF50;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        input:focus, select:focus {
-            outline: none;
-            border-color: #4CAF50;
-        }
-        .btn-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 30px;
-        }
-        button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .btn-submit {
-            background-color: #4CAF50;
-            color: white;
-        }
-        .btn-submit:hover {
-            background-color: #45a049;
-        }
-        .btn-cancel {
-            background-color: #f44336;
-            color: white;
-        }
-        .btn-cancel:hover {
-            background-color: #da190b;
-        }
-        .required {
-            color: red;
-        }
-    </style>
-</head>
+<div class="card mx-auto shadow-sm" style="max-width: 900px;">
+    <div class="card-header bg-white">
+        <h4 class="card-title mb-0">Add New Inventory Item</h4>
+        <small class="text-muted">Create a product and add inventory record</small>
+    </div>
+    <div class="card-body">
+        <form method="POST" class="needs-validation" novalidate>
+            <div class="row gx-3 gy-3">
+                <div class="col-12 col-md-6">
+                    <label for="productName" class="form-label">Product Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="productName" name="productName" placeholder="e.g. Rice - 5kg" required>
+                    <div class="invalid-feedback">Product name is required.</div>
+                </div>
 
-<div class="form-container">
-    <h1>Add New Inventory Item</h1>
-    <p class="subtitle">Create a new product and add it to inventory</p>
-    
-    <form method="POST">
-        <!-- Product inbfo section -->
-        <div class="section-title">Product Information</div>
-        
-        <div class="form-group">
-            <label for="productName">Product Name <span class="required">*</span></label>
-            <input type="text" 
-                   name="productName" 
-                   id="productName" 
-                   placeholder="Enter product name" 
-                   required>
-        </div>
+                <div class="col-12 col-md-6">
+                    <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="category" name="category" placeholder="e.g. Food" required>
+                    <div class="invalid-feedback">Category is required.</div>
+                </div>
 
-        <div class="form-group">
-            <label for="category">Category <span class="required">*</span></label>
-            <input type="text" 
-                   name="category" 
-                   id="category" 
-                   placeholder="Enter category" 
-                   required>
-        </div>
+                <div class="col-6 col-md-3">
+                    <label for="price" class="form-label">Price</label>
+                    <div class="input-group">
+                        <span class="input-group-text">₱</span>
+                        <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" placeholder="0.00" required>
+                        <div class="invalid-feedback">Enter a valid price.</div>
+                    </div>
+                </div>
 
-        <div class="form-group">
-            <label for="price">Price <span class="required">*</span></label>
-            <input type="number" 
-                   name="price" 
-                   id="price" 
-                   placeholder="Enter price" 
-                   step="0.01"
-                   min="0"
-                   required>
-        </div>
+                <div class="col-6 col-md-3">
+                    <label for="productUnitMeasure" class="form-label">Product Unit</label>
+                    <input type="number" class="form-control" id="productUnitMeasure" name="productUnitMeasure" step="0.01" min="0" required>
+                    <div class="invalid-feedback">Enter the product unit measure.</div>
+                </div>
 
-        <div class="form-group">
-            <label for="productUnitMeasure">Product Unit Measure <span class="required">*</span></label>
-            <input type="number" 
-                   name="productUnitMeasure" 
-                   id="productUnitMeasure" 
-                   placeholder="Enter product unit measure" 
-                   step="0.01"
-                   min="0"
-                   required>
-        </div>
+                <div class="col-6 col-md-3">
+                    <label for="quantityOnHand" class="form-label">Quantity on Hand</label>
+                    <input type="number" class="form-control" id="quantityOnHand" name="quantityOnHand" step="0.01" min="0" required>
+                    <div class="invalid-feedback">Enter initial quantity.</div>
+                </div>
 
-        <!-- Inventory info section -->
-        <div class="section-title">Inventory Information</div>
+                <div class="col-6 col-md-3">
+                    <label for="inventoryUnitMeasure" class="form-label">Inventory Unit</label>
+                    <input type="number" class="form-control" id="inventoryUnitMeasure" name="inventoryUnitMeasure" step="0.01" min="0" required>
+                    <div class="invalid-feedback">Enter inventory unit measure.</div>
+                </div>
 
-        <div class="form-group">
-            <label for="quantityOnHand">Quantity on Hand <span class="required">*</span></label>
-            <input type="number" 
-                   name="quantityOnHand" 
-                   id="quantityOnHand" 
-                   placeholder="Enter initial stock quantity" 
-                   step="0.01"
-                   min="0"
-                   required>
-        </div>
+                <div class="col-12 col-md-6">
+                    <label for="inventoryCost" class="form-label">Inventory Cost</label>
+                    <div class="input-group">
+                        <span class="input-group-text">₱</span>
+                        <input type="number" class="form-control" id="inventoryCost" name="inventoryCost" step="0.01" min="0" required>
+                        <div class="invalid-feedback">Enter inventory cost.</div>
+                    </div>
+                </div>
 
-        <div class="form-group">
-            <label for="inventoryUnitMeasure">Inventory Unit Measure <span class="required">*</span></label>
-            <input type="number" 
-                   name="inventoryUnitMeasure" 
-                   id="inventoryUnitMeasure" 
-                   placeholder="Enter inventory unit measure" 
-                   step="0.01"
-                   min="0"
-                   required>
-        </div>
+            </div>
 
-        <div class="form-group">
-            <label for="inventoryCost">Inventory Cost <span class="required">*</span></label>
-            <input type="number" 
-                   name="inventoryCost" 
-                   id="inventoryCost" 
-                   placeholder="Enter inventory cost" 
-                   step="0.01"
-                   min="0"
-                   required>
-        </div>
-
-        <div class="btn-container">
-            <button type="submit" class="btn-submit">Add to Inventory</button>
-            <button type="button" class="btn-cancel" onclick="window.location.href='/'">Cancel</button>
-        </div>
-    </form>
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Add to Inventory</button>
+            </div>
+        </form>
+    </div>
 </div>
+
+<!-- Client-side Bootstrap validation helper -->
+<script>
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
 
 {% endblock %}
