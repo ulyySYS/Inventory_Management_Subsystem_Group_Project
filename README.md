@@ -7,6 +7,8 @@ Group Members (Bisaya Group)
 • Gallardo
 • Montero
 
+pythonanywhere link: https://xanbmontero.pythonanywhere.com/home
+
 # Bountees Kitchen Inventory Management Subsystem
  The Bountees Kitchen Inventory Management Subsystem is a core module designed to manage and monitor all kitchen-related ingredients and supplies. It provides real-time tracking of stock levels, records inventory movement, and supports timely restocking to prevent shortages. By maintaining accurate and organized inventory data, the subsystem helps streamline kitchen operations, reduce waste, and ensure the continuous availability of essential items needed for food preparation.
 
