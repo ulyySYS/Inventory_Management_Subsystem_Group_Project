@@ -1,3 +1,12 @@
+Group Members (Bisaya Group)
+
+• Amoguis
+• Audan
+• Escobal
+• Manuel
+• Gallardo
+• Montero
+
 # Bountees Kitchen Inventory Management Subsystem
  The Bountees Kitchen Inventory Management Subsystem is a core module designed to manage and monitor all kitchen-related ingredients and supplies. It provides real-time tracking of stock levels, records inventory movement, and supports timely restocking to prevent shortages. By maintaining accurate and organized inventory data, the subsystem helps streamline kitchen operations, reduce waste, and ensure the continuous availability of essential items needed for food preparation.
 
@@ -17,6 +26,9 @@ Enables staff to modify existing item details such as name, category, or descrip
 
 * Update Quantity
 Records changes in stock quantity due to usage, replenishment, or adjustments.
+
+# Delete Item
+Additionally a DELETE ITEM functionality was added to expand on the use cases of the subsystem 
 
 # Use Case Description
 
@@ -41,14 +53,11 @@ Triggered when the owner or staff initiates a report request. The system generat
 Triggered when an item falls below the defined threshold. The system generates a low-stock alert for the owner and cashier to take necessary action.
 
 
-Group Members (Bisaya Group)
 
-• Amoguis
-• Audan
-• Escobal
-• Manuel
-• Gallardo
-• Montero
+
+
+
+
 
 
 
